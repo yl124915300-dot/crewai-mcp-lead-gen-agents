@@ -1,0 +1,78 @@
+# ============================================================
+# Task Definitions — CrewAI MCP Lead Gen Agents
+# ============================================================
+
+research_companies:
+  description: >
+    Research and qualify companies matching the Ideal Customer Profile:
+
+    - **Industry:** {target_industry}
+    - **Company Size:** {target_company_size}
+    - **Product:** {product_description}
+
+    Use your MCP tools to find 10 companies that fit. For each company gather:
+    1. Company name and domain
+    2. Industry and sub-industry
+    3. Employee count and revenue estimate
+    4. Funding stage and total funding raised
+    5. Headquarters location and year founded
+    6. Technology stack (what tools/platforms they use)
+    7. Recent news or events (last 6 months)
+
+    Score each company's fit from 1-10 and explain why they are a good match.
+    Reject companies that clearly do not fit the ICP.
+  expected_output: >
+    A structured list of 10 qualified companies with full firmographic data,
+    tech stack, recent news, and fit scores with reasoning.
+  agent: lead_researcher
+
+enrich_contacts:
+  description: >
+    For each of the 10 qualified companies, find the right decision-maker:
+
+    - **Target Role:** {target_role}
+    - Look for the person most likely to buy "{product_description}"
+
+    For each contact, enrich with:
+    1. Full name and current job title
+    2. Verified email address with confidence score
+    3. LinkedIn profile URL
+    4. Seniority level (C-level, VP, Director, Manager)
+    5. Department
+    6. Location
+
+    If the exact target role is not found, find the closest equivalent.
+    Prioritize email accuracy over speed.
+  expected_output: >
+    A structured list of 10 decision-maker contacts with verified emails,
+    LinkedIn profiles, and seniority data. Each contact mapped to their company.
+  agent: contact_enricher
+  context:
+    - research_companies
+
+create_outreach:
+  description: >
+    Create a personalized cold outreach email for each of the 10 leads.
+    The value proposition is: "{value_proposition}"
+
+    Each email must include:
+    1. A subject line under 50 characters
+    2. A personalization hook referencing something specific about the
+       company (funding round, hiring trend, tech stack, news)
+    3. A connection between their likely pain point and the value proposition
+    4. A clear, low-friction call to action (15-minute call, not a demo)
+    5. Total length under 120 words
+
+    Then compile the FULL lead report with:
+    - Company profiles with fit scores
+    - Decision-maker contacts with emails
+    - Personalized outreach templates
+    - Summary statistics (total leads, average fit score, email coverage)
+  expected_output: >
+    A complete lead generation report in markdown format containing:
+    company profiles table, enriched contacts table, 10 personalized
+    email templates, and summary metrics.
+  agent: outreach_strategist
+  context:
+    - research_companies
+    - enrich_contacts

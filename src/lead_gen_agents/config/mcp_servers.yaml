@@ -1,0 +1,37 @@
+# ============================================================
+# MCP Server Registry — Vinkius AI Gateway
+# ============================================================
+# Only 5 MCP servers — lean setup, fast to configure.
+# URL format: https://edge.vinkius.com/<token>/mcp
+
+# -----------------------------------------------
+# Agent 1 — Lead Researcher
+# -----------------------------------------------
+research:
+  - name: apolloio-mcp
+    env_var: VINKIUS_APOLLOIO_MCP_URL
+    description: "Company search, firmographics, tech stack, prospecting"
+
+  - name: crunchbase-mcp
+    env_var: VINKIUS_CRUNCHBASE_MCP_URL
+    description: "Funding data, investors, company profiles, acquisitions"
+
+# -----------------------------------------------
+# Agent 2 — Contact Enrichment
+# -----------------------------------------------
+enrichment:
+  - name: hunter-mcp
+    env_var: VINKIUS_HUNTER_MCP_URL
+    description: "Email finder, verification, domain search"
+
+  - name: linkedin-mcp
+    env_var: VINKIUS_LINKEDIN_MCP_URL
+    description: "Professional profiles, job titles, company pages"
+
+# -----------------------------------------------
+# Agent 3 — Outreach Strategist
+# -----------------------------------------------
+outreach:
+  - name: exa-ai-mcp
+    env_var: VINKIUS_EXA_MCP_URL
+    description: "Semantic search for company news, blog posts, signals"
