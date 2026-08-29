@@ -63,7 +63,7 @@ jobs:
 
           # Read the live OpenAPI first. The deployed API describes the registration path;
           # current official backend and SDK sources below establish the concrete nested fields.
-          schema_status, _, schema_body = request_json(f"{base}/openapi.json")
+          schema_status, _, schema_body = request_json(f"{base}/api-docs/openapi.json")
           print(f"LIVE_OPENAPI_HTTP_STATUS={schema_status}")
           if schema_status != 200:
               print("LIVE_OPENAPI_RESPONSE=" + schema_body.replace("\n", " ")[:6000])
