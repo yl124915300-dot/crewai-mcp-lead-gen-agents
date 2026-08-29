@@ -24,6 +24,12 @@ class CompanyProfile(BaseModel):
     fit_reasoning: str = ""
 
 
+class CompanyResearchBatch(BaseModel):
+    """Structured company research passed to the paid enrichment phase."""
+
+    companies: list[CompanyProfile] = Field(default_factory=list)
+
+
 class ContactProfile(BaseModel):
     """An enriched decision-maker contact."""
 
