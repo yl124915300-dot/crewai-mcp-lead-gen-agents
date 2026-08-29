@@ -86,7 +86,7 @@ class X402EvmTransport:
             raise RuntimeError('Install the optional buyer adapter with: pip install -e ".[x402]"') from error
 
         client = x402ClientSync()
-        client.set_spend_controls({"max_amount_per_payment": f"$${MAX_PAYMENT_USD}"})
+        client.set_spend_controls({"max_amount_per_payment": f"${MAX_PAYMENT_USD}"})
         register_exact_evm_client(client, EthAccountSigner(Account.from_key(private_key)))
         self._session = x402_requests(client)
 
