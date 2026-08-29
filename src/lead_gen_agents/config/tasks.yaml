@@ -10,7 +10,9 @@ research_companies:
     - **Company Size:** {target_company_size}
     - **Product:** {product_description}
 
-    Use your MCP tools to find 10 companies that fit. For each company gather:
+    Use your MCP tools to find 10 companies that fit. This task is followed by
+    a deterministic Jarvis domain preflight before any Hunter or LinkedIn
+    enrichment. For each company gather:
     1. Company name and domain
     2. Industry and sub-industry
     3. Employee count and revenue estimate
@@ -22,12 +24,17 @@ research_companies:
     Score each company's fit from 1-10 and explain why they are a good match.
     Reject companies that clearly do not fit the ICP.
   expected_output: >
-    A structured list of 10 qualified companies with full firmographic data,
-    tech stack, recent news, and fit scores with reasoning.
+    A CompanyResearchBatch containing a structured list of 10 qualified
+    companies. Every company must include its name and candidate public domain,
+    plus firmographic data, tech stack, recent news, and fit reasoning.
   agent: lead_researcher
 
 enrich_contacts:
   description: >
+    The company list in context has already passed the mandatory Jarvis domain
+    preflight. Use only each canonical domain supplied there; do not restore or
+    guess a different domain.
+
     For each of the 10 qualified companies, find the right decision-maker:
 
     - **Target Role:** {target_role}
