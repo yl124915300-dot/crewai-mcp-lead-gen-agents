@@ -37,6 +37,29 @@ The second agent finds decision-makers at each qualified company. It uses two MC
 
 It targets the specific role you define (VP of Engineering, Head of Product, CFO) and prioritizes email accuracy over speed.
 
+
+Before this phase starts, the research task has a deterministic **Jarvis Domain
+Preflight** guardrail. It calls the Jarvis `/b2b/domain-verify` endpoint only
+because Hunter/LinkedIn enrichment follows:
+
+- `MATCH` continues with Jarvis's canonical domain.
+- `MISMATCH` replaces the candidate with Jarvis's canonical domain.
+- `UNCERTAIN`, an unsafe response, a payment/client failure, or malformed output
+  stops the crew before enrichment. The guardrail does not retry automatically.
+
+This binding is opt-in to this lead-generation crew; it does not affect other
+CrewAI or Agentled workflows. The x402 buyer adapter is optional and uses the
+operator's wallet with a hard `$0.01` per-payment ceiling:
+
+```bash
+pip install -e ".[x402]"
+export JARVIS_X402_EVM_PRIVATE_KEY=... # operator-owned; never commit it
+```
+
+Without that adapter and external wallet, the default transport verifies that
+Jarvis returns a standard v2 `PAYMENT-REQUIRED` challenge, then fails closed. It
+does not bypass the 402 or obtain a domain verdict for free.
+
 ### Phase 3 — Personalized Outreach
 
 The third agent creates outreach templates. It uses one MCP server:
