@@ -1,5 +1,42 @@
 # CrewAI MCP Lead Gen Agents
 
+## Evidence-gated existing-business operations
+
+Commercial `lead-gen prospect` now requires `--evidence-case /private/path/case.json`
+before importing CrewAI or contacting a paid service. Unknown operating eligibility,
+fee authority, payout eligibility, buyer mandate, stale demand or missing scoped
+consent blocks the command. All five documented gateway URLs must be configured;
+configuration alone is not a successful connection test.
+
+The independent operator cycle uses only Python's standard library:
+
+```sh
+PYTHONPATH=src python -m lead_gen_agents.operating_cycle /private/path/case.json --output /private/path/result.json
+PYTHONPATH=src python -m pytest tests
+```
+
+The module records manager/acquisition/delivery/review decisions and exposes a
+SQLite reservation/readback ledger. The current AI operator performs the reasoning
+and connector actions; this is not an unattended four-model agent deployment.
+It does not send email, submit referrals, charge cards, sign agreements or verify
+legal eligibility. Evidence hashes detect changed snapshots, not falsified claims.
+Keep case snapshots and customer materials outside this public repository.
+See [the operating skill](skills/existing-business-cycle/SKILL.md) for scoped use.
+
+Case JSON contains `case_id`, `business_id`, `mode` (LIVE/REPLAY/SIMULATION), `goal`,
+`evidence` (map of ID to relative `path`, `sha256`, timezone-aware `observed_at`,
+`mode`, `reviewed`), `demand` (`requested_at`, `explicit_request`, `unresolved`), `gates`
+(`operating_eligibility`, `fee_authority`, `payout_eligibility`, `buyer_mandate`),
+`consent` (`authorized`, `scope`) and `proposed_disclosures`. Each claim has `value`
+(explicit boolean or unknown) and `evidence` (IDs). Claims require reviewed
+evidence from the last seven days; LIVE cases cannot rely on test/replay evidence.
+`requested_at` is the original request time, not its latest fetch time; re-reading
+an expired lead does not make it fresh.
+An operator must review the original source's meaning before setting a claim.
+Optional `payments` require an order ID, positive integer `amount_minor`, currency,
+`is_test=false`, `status=PAYMENT_VERIFIED` and a sourced `provider_readback` claim.
+Do not treat a referral bounty advertised by an employer as money receivable.
+
 **A multi-agent system that generates qualified B2B lead lists with enriched contact data and personalized outreach templates — powered by CrewAI, Google Gemini, and 5 production MCP servers from the [Vinkius AI Gateway](https://vinkius.com).**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
