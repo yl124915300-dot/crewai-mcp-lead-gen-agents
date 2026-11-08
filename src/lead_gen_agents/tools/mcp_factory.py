@@ -8,6 +8,8 @@ from pathlib import Path
 import yaml
 from rich.console import Console
 
+from lead_gen_agents.config_policy import gateway_url_valid
+
 console = Console()
 
 _CONFIG_DIR = Path(__file__).parent.parent / "config"
@@ -26,11 +28,10 @@ def _get_mcp_urls(group: str) -> list[str]:
     for server in servers:
         env_var = server["env_var"]
         url = os.getenv(env_var)
-        if not url or "REPLACE_ME" in url:
-            console.print(f"  [yellow]! {server['name']}:[/yellow] [dim]{env_var} not configured[/dim]")
-            continue
+        if not url or not gateway_url_valid(url):
+            raise ValueError(f"{env_var}: missing or invalid documented HTTPS gateway URL")
         urls.append(url)
-        console.print(f"  [green]+ {server['name']}:[/green] [dim]connected[/dim]")
+        console.print(f"  [green]+ {server['name']}:[/green] [dim]configured; connectivity unverified[/dim]")
     return urls
 
 
@@ -63,9 +64,9 @@ def validate_environment() -> bool:
     registry = _load_registry()
     all_ok = True
     for group_name, servers in registry.items():
-        configured = sum(1 for s in servers if os.getenv(s["env_var"], "") and "REPLACE_ME" not in os.getenv(s["env_var"], ""))
-        if configured == 0:
-            console.print(f"[red]x No MCP servers for '{group_name}'[/red]")
+        configured = sum(1 for s in servers if gateway_url_valid(os.getenv(s["env_var"], "")))
+        if not servers or configured != len(servers):
+            console.print(f"[red]x Incomplete MCP configuration for '{group_name}': {configured}/{len(servers)}[/red]")
             all_ok = False
         else:
             console.print(f"[green]+ {group_name}: {configured}/{len(servers)} configured[/green]")

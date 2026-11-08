@@ -1,12 +1,16 @@
 """CLI entry point for Lead Gen Agents."""
 
 from __future__ import annotations
+
+import json
 from pathlib import Path
+
 import typer
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+
 from lead_gen_agents import __version__
 
 _PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -23,8 +27,17 @@ def prospect(
     size: str = typer.Option("50-500", "--size", "-s", help="Company size range (e.g., '50-500')"),
     product: str = typer.Option("", "--product", "-p", help="Your product/service description"),
     value_prop: str = typer.Option("", "--value", "-v", help="Your value proposition"),
+    evidence_case: Path = typer.Option(..., "--evidence-case", help="Private reviewed business evidence JSON"),
 ):
     """Generate a qualified lead list with enriched contacts and outreach templates."""
+    from lead_gen_agents.operating_cycle import evaluate
+
+    decision = evaluate(json.loads(evidence_case.read_text()), evidence_case.parent)
+    if not decision["delivery"]["formal_submission_allowed"]:
+        console.print("[red]Commercial prospecting blocked by evidence gates.[/red]")
+        console.print(", ".join(decision["manager"]["blockers"]))
+        raise typer.Exit(code=1)
+
     from lead_gen_agents.flow import LeadGenFlow
     from lead_gen_agents.state import LeadGenFlowState
     from lead_gen_agents.tools.mcp_factory import validate_environment
@@ -58,6 +71,7 @@ def prospect(
 def validate():
     """Validate your environment configuration."""
     from lead_gen_agents.tools.mcp_factory import validate_environment
+
     if validate_environment():
         console.print("\n[bold green]Environment is ready.[/bold green]")
     else:
@@ -67,13 +81,15 @@ def validate():
 @app.command()
 def info():
     """Show project information."""
-    console.print(Panel(
-        f"[bold]CrewAI MCP Lead Gen Agents[/bold] v{__version__}\n\n"
-        f"AI agent crew that generates qualified B2B lead lists\n"
-        f"with enriched contacts and personalized outreach.\n\n"
-        f"[dim]Powered by CrewAI + Vinkius AI Gateway + Google Gemini[/dim]",
-        border_style="blue",
-    ))
+    console.print(
+        Panel(
+            f"[bold]CrewAI MCP Lead Gen Agents[/bold] v{__version__}\n\n"
+            f"AI agent crew that generates qualified B2B lead lists\n"
+            f"with enriched contacts and personalized outreach.\n\n"
+            f"[dim]Powered by CrewAI + Vinkius AI Gateway + Google Gemini[/dim]",
+            border_style="blue",
+        )
+    )
     table = Table(title="Agent Pipeline", show_header=True, header_style="bold")
     table.add_column("Phase", style="bold")
     table.add_column("Agent", style="cyan")

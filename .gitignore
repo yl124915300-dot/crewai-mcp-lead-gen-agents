@@ -16,3 +16,8 @@ output/*.csv
 !output/.gitkeep
 .python-version
 uv.lock
+
+# Private operator bundles and durable action state never belong in public Git.
+operator-private/
+*.sqlite3
+*.sqlite3-*
